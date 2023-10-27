@@ -1,0 +1,53 @@
+# Preprocesamineto de datos especiales Landsat TM 8 y 9 
+library(sp)
+library(raster)
+library(rgdal)
+######################################
+extraer datos opticos
+####################################
+D:/Datos vilca/vilca
+D:/Datos vilca/sancarlos
+setwd("D:/Datos vilca/sancarlos")
+
+files <- list.files(pattern='.tif')
+files
+b1 <- raster("D:/Datos vilca/sancarlos/B1.tif")
+b2 <- raster("D:/Datos vilca/sancarlos/B2.tif")
+b3 <- raster("D:/Datos vilca/sancarlos/B3.tif")
+b4 <- raster("D:/Datos vilca/sancarlos/B4.tif")
+b5 <- raster("D:/Datos vilca/sancarlos/B5.tif")
+b6 <- raster("D:/Datos vilca/sancarlos/B6.tif")
+b7 <- raster("D:/Datos vilca/sancarlos/B7.tif")
+
+#Layer Stack de las bandas
+bandas <- raster::brick(b1,b2,b4,b5)
+bandas
+
+# conversion de nivel digital a radiancia valores para landsat 9
+
+radb2 <- 0.012568*b2+(-62.84149)
+radb3 <- 0.011595*b3+(-57.97475)
+radb4 <- 0.0097687*b4+(-48.84350)
+radb5 <- 0.0059873*b5+(-29.93628)
+radb6 <- 0.0014882*b6+(-7.44119)
+radb7 <- 0.0005015*b6+(-2.50749)
+radb7
+# conversion de radianca a reflectancia
+
+##calculamos la distancia sol tierra
+
+#d <- (1-0.01672*cos(0.9856*(daijuliano-4)))#
+d <- (1-0.01672*cos(0.9856*(243-4)))
+d
+cost <- cos(3.4116*(90-62.9400)/180)
+cost
+
+# conversion de radianca a reflectancia
+# para determinar valores de Esun https://yceo.yale.edu/how-convert-landsat-dns-top-atmosphere-toa-reflectance
+# https://www.mdpi.com/2072-4292/12/3/498
+refcletancia 
+Reflb2 <- ((pi)*radb2*d^2)/(2067*cost)
+Reflb2
+hist(Reflb2)
+
+writeRaster(Reflb2, filename = "C:/Users/JHONATHAN/Desktop/Nueva carpeta (3)/Reflb2.tif", overwrite = TRUE)
